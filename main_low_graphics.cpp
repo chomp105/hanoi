@@ -26,44 +26,20 @@ int main(void) {
 	system("figlet WINNER!!!");
 	return 0;
 }
-
 void print(const int towers[3][5]) {
 	for(int i {4}; i >= 0; i--) {
 		for(int j {0}; j < 3; j++) {
-			if(towers[j][i] == 0) {
-				cout << "  \033[90m|\033[0m   ";
-			} else if (towers[j][i] % 2 == 1) {
-				for(int k {0}; k < (6 - towers[j][i]) / 2; k++) {
-					cout << " ";
-				}
-				for(int k {0}; k < towers[j][i]; k++) {
-					cout << "\033[" << towers[j][i] + 30 << "m█\033[0m";
-				}
-				for(int k {0}; k < (6 - towers[j][i]) / 2 + 1; k++) {
-					cout << " ";
-				}
-			}  else {
-				for(int k {0}; k < (6 - towers[j][i]) / 2 - 1; k++) {
-					cout << " ";
-				}
-				for(int k {0}; k < towers[j][i] + 1; k++) {
-					if(k== 0) {
-						cout << "\033[" << towers[j][i] + 30 << "m▐\033[0m";
-					} else if (k == towers[j][i]) {
-						cout << "\033[" << towers[j][i] + 30 << "m▌\033[0m";
-					} else {
-						cout << "\033[" << towers[j][i] + 30 << "m█\033[0m";
-					}
-				}
-				for(int k {0}; k < (6 - towers[j][i]) / 2; k++) {
-					cout << " ";
-				}
+			for(int k {0}; k < towers[j][i]; k++) {
+				cout << "\033[" << towers[j][i] + 30 << "m▓\033[0m";
+			}
+			for(int k {0}; k < 6 - towers[j][i]; k++) {
+				cout << " ";
 			}
 		}
 		cout << endl;
 	}
-	cout << "\033[90m█████████████████\033[0m" << endl << endl;
-} 
+	cout << "\033[90m▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓\033[0m" << endl;
+}
 
 void move(int towers[3][5]) {
 	int tower1 , tower2, tower1_top, tower2_top;
