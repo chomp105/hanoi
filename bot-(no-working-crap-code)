@@ -1,0 +1,244 @@
+#include <iostream>
+#include <stdlib.h>
+using namespace std;
+
+void print(const int towers[3][5]);
+void move(int towers[3][5], int tower1, int tower2);
+int tower_top_checker(int towers[3][5], int tower);
+bool check_won(const int towers[3][5]);
+void solve(int towers[3][5]);
+void three_move(int towers[3][5], int wt, int tgt, int otr);
+void four_move(int towers[3][5], int wt, int tgt, int otr);
+
+int main(void) {
+	system("clear");
+	int towers[3][5] = {
+		{5, 4, 3, 2, 1},
+		{0},
+		{0}
+	};
+	solve(towers);
+	print(towers);
+	return 0;
+}
+void print(const int towers[3][5]) {
+	for(int i {4}; i >= 0; i--) {
+		for(int j {0}; j < 3; j++) {
+			for(int k {0}; k < towers[j][i]; k++) {
+				cout << "\033[" << towers[j][i] + 30 << "m▓\033[0m";
+			}
+			for(int k {0}; k < 6 - towers[j][i]; k++) {
+				cout << " ";
+			}
+		}
+		cout << endl;
+	}
+	cout << "\033[90m▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓\033[0m" << endl;
+}
+
+void move(int towers[3][5], int tower1, int tower2) {
+	if(tower1 < 3 && tower2 < 3 && tower1 >= 0 && tower2 >= 0) {
+		int tower1_top = tower_top_checker(towers, tower1);
+		int tower2_top = tower_top_checker(towers, tower2);
+		if(towers[tower1][tower1_top] < towers[tower2][tower2_top]) {
+			towers[tower2][tower2_top + 1] = towers[tower1][tower1_top];
+			towers[tower1][tower1_top] = 0;
+		} else if(towers[tower2][tower2_top] == 0) {
+			towers[tower2][tower2_top] = towers[tower1][tower1_top];
+			towers[tower1][tower1_top] = 0;
+		}
+	}
+}
+
+int tower_top_checker(int towers[3][5], int tower) {
+	for(int i {0}; i < 5; i++) {
+		if(towers[tower][i] == 0) {
+			if(i == 0) {
+				return 0;
+			}
+			return i - 1;
+		}
+		if(i == 4) {
+			return 4;
+		}
+	}
+	return 0;
+}
+
+bool check_won(const int towers[3][5]) {
+	for(int i {0}; i < 5; i++) {
+		if(towers[2][i] == 0) {
+			return false;
+		}
+	}
+	return true;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
+
+void solve(int towers[3][5]) {
+	
+	int wt, wts, tgt, otr, stk, stk_drp;
+	
+	static int count = 0;
+	count++;
+	
+	for(int i {0}; i < 3; i++) {
+		bool broken {false};
+		for(int j {0}; j < 5; j++) {
+			if(towers[i][j] == 1) {
+				wt = i;
+				broken = true;
+				break;
+			}
+		}
+		if(broken) break;
+	}
+	
+	for(int i {3}; i >= 0; i--) {
+		if(towers[wt][i] - 1 == towers[wt][i + 1] && towers[wt][i] != 0) { // todo: fix this condition
+			wts = 3 - i;
+			cout << wts << endl;
+			break;
+		}
+	}
+	
+	if(wt == 2) {
+		int tgt_last {0};
+		for(int i {0}; i < 2; i++) {
+			bool broken {false};
+			for(int j {0}; j < 5; j++) {
+				if(towers[i][j] == 0) {
+					if(j == 0) {
+						tgt = i;
+						broken = true;
+						break;
+					} else if(tgt_last == 0) {
+						tgt_last = towers[i][j - 1];
+						break;
+					} else if(towers[i][j - 1] < tgt_last) {
+						tgt = towers[i][j - 1];
+						broken = true;
+						break;
+					}
+				}
+			}
+			if(broken) break;
+		}
+	} else {
+		tgt = 2;
+	}
+	
+	for(int i {0}; i < 3; i++) {
+		if(i != wt && i != tgt) {
+			otr = i;
+		}
+	}
+	
+	if(wts % 2 == 0) {
+		three_move(towers, wt, tgt, otr);
+	} else {
+		four_move(towers, wt, tgt, otr);
+	}
+	
+	if(check_won(towers)) {
+		return;
+	}
+	
+	for(int i {0}; i < 3; i++) {
+		if (i == tgt) continue;
+		if (towers[i][0] == 0) {
+			stk_drp = i;
+		} else if(stk != -1) {
+			if (tower_top_checker(towers, i) < stk) {
+				stk = i;
+			} else {
+				stk_drp = i;
+			}
+		} else {
+			stk = i;
+		}
+	}
+	
+	move(towers, stk, stk_drp);
+	print(towers);
+	system("sleep 1s");
+	system("clear");
+	
+	if(count > 15) return;
+	
+	solve(towers);
+}
+
+void three_move(int towers[3][5], int wt, int tgt, int otr) {
+		move(towers, wt, tgt);
+		print(towers);
+		system("sleep 1s");
+		system("clear");
+		move(towers, wt, otr);
+		print(towers);
+		system("sleep 1s");
+		system("clear");
+		move(towers, tgt, otr);
+		print(towers);
+		system("sleep 1s");
+		system("clear");
+		move(towers, wt, tgt);
+		print(towers);
+		system("sleep 1s");
+		system("clear");
+		move(towers, otr, wt);
+		print(towers);
+		system("sleep 1s");
+		system("clear");
+		move(towers, otr, tgt);
+		print(towers);
+		system("sleep 1s");
+		system("clear");
+		move(towers, wt, tgt);
+		print(towers);
+		system("sleep 1s");
+		system("clear");
+}
+
+void four_move(int towers[3][5], int wt, int tgt, int otr) {
+	move(towers, wt, otr);
+	print(towers);
+	system("sleep 1s");
+	system("clear");
+	move(towers, wt, tgt);
+	print(towers);
+	system("sleep 1s");
+	system("clear");
+	move(towers, otr, tgt);
+	print(towers);
+	system("sleep 1s");
+	system("clear");
+	move(towers, wt, otr);
+	print(towers);
+	system("sleep 1s");
+	system("clear");
+	move(towers, tgt, wt);
+	print(towers);
+	system("sleep 1s");
+	system("clear");
+	move(towers, tgt, otr);
+	print(towers);
+	system("sleep 1s");
+	system("clear");
+	move(towers, wt, otr);
+	print(towers);
+	system("sleep 1s");
+	system("clear");
+	move(towers, wt, tgt);
+	print(towers);
+	system("sleep 1s");
+	system("clear");
+	three_move(towers, otr, wt, tgt);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
